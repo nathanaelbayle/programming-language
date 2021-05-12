@@ -34,10 +34,9 @@ The course covers important language constructs in modern languages. It discusse
 - follow new developments in programming languages.
 - read and understand, to a useful degree, scholarly articles in the area of programming languages.
 
-&nbsp;&nbsp;
-
-# Abstract Syntax
 &nbsp;
+&nbsp;
+
 ## About concrete and abstract syntax
 
 *Concrete syntax* is concerned with the precise syntax of a program construct, whereas *abstract syntax* with those components of the construct that are essential for its semantics. 
@@ -56,7 +55,7 @@ A possible AST of the above example Haskell expression is as follows. It contain
 
 The *if expression* has three components, the condition and the value of the two branches.
 The *comparison expression* (the `==` expression) has two integer subexpressions.
-
+&nbsp;
 ## Specifying abstract syntax
 
 An *abstract syntax tree* (AST) is a node-labeled *multiway tree* (popularly celled *rose tree* by functional programmers). In a rose tree the number of child nodes for each node can be arbitrary. The labels indicate what kind of a language construct the node represents (such as a variable, function call, or integer constant, to give a few examples). The labels typically translate to node types in an AST implementation.
@@ -124,7 +123,6 @@ pred (
  
 Being this precise with the type of each subterm for each expression comes at a price: a large AST signature.
 
-
 ### Less stringent presentation of BTL in ESL
 
 We can relax the precision of the AST by using a more general `expr` for all expressions, and introduce a general function call with a function name rather than declaring each specific function. According to convention we keep `if` as a special language feature. The `*` symbol indicates zero or more occurrences of a sort.
@@ -160,154 +158,273 @@ functionCall ( "pred",
 
 We cannot capture that the language specification requires that the first parameter of `if` must be an expression that evaluates to a boolean value, the argument to `succ` must be an integer expression, and so forth. Such violations must be caught later, by the type-checker, or at run time.
 
+### Universal representation of ASTs in ESL
+
+It is also possible to use very general data type in the metalanguage that can represent any signature—the same data type could be used for ASTs of any object language.
+```haskell
+symbol term: constructorid × termrep∗ -> termrep;
+type constructorid = string;
+```
+
+This presentation is so general that we basically have lost all specifics of BTL. Any BTL term can be represented using this signature, as well as many terms that do not represent meaningful BTL programs.
+
+The following are all valid  `TermRep` ASTs. The first is intended to be a valid BTL term, the latter two fail to be BTL terms, as explained in the previous sections.
+```haskell
+Term ("pred",
+    Term("if", Term(" iszero ",Term("zero")) ,
+    Term("succ",Term("succ",Term("zero"))) ,
+    Term("zero")
+  ))
+Term ("pred",
+    Term("if", Term("zero") ,
+    Term("succ",Term("succ",Term("true"))) ,
+    Term("zero")
+  ))
+Term("if", Term("zero") ,
+    Term(" iszero ",Term("true"))
+)
+```
+
+We would need to apply static analysers, to check if such an AST actually represents BTL code (or possibly something else).
+
+Such a *universal* representation can be useful in various metaprogramming applications, enabling algorithms that can operate on *all* data types (think of things like serialization, traversals through data types, etc.).
+&nbsp;
+
+## Representing ASTs in a meta-language
+
+The declaration of AST signatures defines (a superset) of valid terms of the *object language*, the programming language, e.g., BIPL, we want to study. Now we want to represent the object language AST in our *metalanguage*, the programming language, e.g., Haskell, we use for implementing our tools.
+
+There is a wide array of choices on how to represent programs in the object language with a chosen metalanguage. If the metalanguage is typed, the types can be taken advantage of to making only valid ASTs to be representable, or at least to make some invalid ASTs unrepresentable. If a typed functional language is used as a metalanguage, algebraic data types provide a rather straightforward encoding of *algebraic signatures* (and of ESL). In an untyped functional language, terms are constructed with lists: they capture the tree structure, but do not enforce type-correct composition of terms. Object-oriented languages as metalanguages typically map sorts to classes and represent subterms as member variables. Typing of member variables rules out type incorrect ASTs
 
 
+### Standard presentation of BTL in Haskell
 
+The question is how to represent terms generated from a signature. Haskell’s data types are rather well-suited for representing ASTs, since they are a fairly direct representation of algebraic signatures. Below, we define a data type for BTL. `TRUE` and `FALSE` are in all-caps because the names `True` and `False` are taken by the standard library.
+```haskell
+data Expr
+= ETrue
+| EFalse
+| EZero
+| ESucc Expr
+| EPred Expr
+| EIsZero Expr
+| EIf Expr Expr Expr
+```
 
+With this representation, the `sampleExpr` from above is written as:
+```haskell
+EPred
+  (EIf
+    (EIsZero
+      EZero)
+    (ESucc
+   (ESucc
+     EZero))
+  EZero)
+```
 
+### Opaque presentation of BTL in Haskell
 
+Above, the meta-programmer has full access to the AST representation. One can imagine scenarios where the representation ought to be kept hidden, and access to the AST, maybe just parts of it, should be via an abstract data type. A brief outline of one such possible Haskell representation is as follows. Here, each function constructs ASTs of some opaque type `ExpQ`, whose definition is not accessible.
+```haskell
+-- Abstract data type for Btl expressions (object language) in Haskell (metalanguage)
+trueE :: () −> ExpQ
+falseE :: () −> ExpQ
+zeroE :: () −> ExpQ
+succE :: ExpQ −> ExpQ
+predE :: ExpQ −> ExpQ
+iszeroE :: ExpQ −> ExpQ
+ifE :: ExpQ −> ExpQ −> ExpQ −> ExpQ
+```
 
+### Standard presentation of BTL using OO
 
+Finally, for balance, here’s a possible representation in an object-oriented meta-language (C++). The expr sort is represented with an abstract base class from which each different kind of expression derives from.
+```haskell
+struct Expr { virtual ~Expr() {}; };
+struct True : Expr {};
+struct False : Expr {};
+struct Zero : Expr {};
+struct Succ : Expr {
+  Expr∗ e ;
+  Succ(Expr∗ e) : e(e) {}
+};
+struct Pred : Expr {
+  Expr∗ e ;
+  Pred(Expr e) : e(e) {}
+};
+struct IsZero : Expr {
+  Expr∗ e ;
+  IsZero (Expr∗ e) : e(e) {}
+};
+struct If : Expr {
+  Expr∗ e0 , e1, e2 ;
+  If (Expr∗ e0 , Expr∗ e1 , Expr∗ e2)
+    : e0(e0) , e1(e1) , e2(e2) {}
+};
+```
 
-## Introduction
+Instead of raw pointers, it would be advisable to use shared pointers (`std::shared_ptr`), or have the structs assume ownership of their child nodes and therein take responsibility for their (de)allocation. The `Expr` node could store data relevant for all nodes (such as the source location of the concrete syntax that gave rise to the node). The structs could support a *visitor* interface for helping in extending the language and its functionality. In general, there are several design choices in how to best represent abstract syntax trees.
 
-## Abstract Syntax
-There is two forms of syntax
-- Concrete syntax : what the programmer writes
-- Abstract syntax : what is essential for the semantics
+### Haskell representation of universal presentation
 
-Absttract syntax originally developed for compiling
-- Ignore comments
-- Ignore layout
-- Comments important for documentation (Javadoc, Doxygene, ... )
-- Comments and layout important for IDEs
+We can define ASTs for the universal representation,
+```haskell
+-- Representation of any object language in Haskell (metalanguage)
+data TermRep = Term ConstrId [TermRep]
+type ConstrId = String
+```
 
-#### Basil Signature Language (BSL)
-- Functions types:
-  - Function symbol
-  - list of argument sorts
-  - result sort
-- Sorts implicit 
+For example, the object language term `pred ( if ( iszero zero ) ( succ ( succ zero )) zero )` would be representated as follows in Haskell using
+```haskell
+termExample1 = Term "pred"
+  [Term "if" [Term " iszero " [Term "zero" []],
+    Term "succ" [Term "succ" [Term "zero" []]],
+    Term "zero" []
+  ]]
+```
 
-#### Extended Signature Language (ESL)
-- BSL Symbol declarations
-- Type declarations (aliases) list types t*, t
-- Optional types t?
-- Tuple types t1 × ... × tn
-- Primitive types
-  - boolean, 
-  - integer, 
-  - float, 
-  - string, 
-  - term
+The two bad terms from the discussion in Section 2 will be as follows.
+```haskell
+termExample2 :: TermRep
+termExample2 = Term "pred"
+  [Term "if" [Term "zero" [], Term "succ" [Term "succ" [Term "true" []]], Term "zero" []]]
+termExample3 :: TermRep
+termExample3 = Term "if" [Term "zero" [Term " iszero " [Term "true" []]]]
+```
 
+## Further Examples
 
-## Extended BTL abstract syntax
+### Standard presentation of BIPL in ESL
+Lämmel’s *Basic Imperative Programming Language* (BIPL) as an example for a full AST specification. BIPL’s constructs are assignments, sequences, conditionals, and loops. The following example demonstrates its concrete syntax.
+```c++
+{
+  // sample operands for euclidian division of x by y
+  x = 14; y = 4;
+  // compute quotient q=3 and remainder r=2
+  q = 0;
+  r = x;
+  while (r >= y) {
+    r = r − y;
+    q = q + 1;
+  }
+}
+```
 
-**Symbol** uplus : expr → expr ; \
-**Symbol** uminus : expr → expr ;\
-**Symbol** unot : expr → expr ;\
-**Symbol** intLiteral : integer → expr ;\
-**Symbol** booLiteral : boolean → expr ;\
-**Symbol** varid : string → expr ;\
-**Symbol** functionCall : string × expr → expr ;\
-**Symbol** binaryExpr : binop × expr × expr → expr ; \
-**Symbol** ifexpr : expr × expr × expr → expr ; 
+BIPL’s abstract syntax is shown below. The function signatures that have no parameters define constants. This signature separates statments from expressions (but no more detailed typing), but keeps track of the exact number of arguments to a function (and thus has to keep track of all functions).
+```haskell
+-- Statements
+symbol skip : -> stmt;
+symbol assign : string × expr -> stmt;
+symbol seq : stmt × stmt -> stmt;
+symbol if : expr × stmt × stmt -> stmt;
+symbol while : expr × stmt -> stmt;
 
-**Symbol** plus : → binop ;\
-**Symbol** minus : → binop ;\
-**Symbol** or : → binop ;\
-**Symbol** mult : → binop ;\
-... \
-**Symbol** le : → binop ;\
-**Symbol** ge : → binop ;
+-- Expressions
+symbol intconst : integer -> expr ;
+symbol boolconst : bool -> expr ;
+symbol var : string -> expr ;
+symbol unary: uop × expr -> expr ;
+symbol binary : bop × expr × expr !->expr ;
 
+-- Unary operators
+symbol negate : -> uop;
+symbol not : -> uop;
 
+-- Binary operators
+symbol add: -> bop;
+symbol sub: -> bop;
+symbol mul: -> bop;
+symbol lt : -> bop;
+symbol leq : -> bop;
+symbol eq: -> bop;
+symbol geq: -> bop;
+symbol gt : -> bop;
+symbol and: -> bop;
+symbol or : -> bop;
+```
 
-## Represent Object language in Metalanguage
-The ESL difines the abstract syntax of an Object Language. \
-We will use a Metalanguage for our tools :
-- How to represent abstract syntax in the metalanguage
-- Use algebraic data types (Haskell)
-  - Each ESL sort becomes a new data type
-  - Each ESL function becomes a case for the result type
-  - Extending the object language requires adding cases
-- Object-oriented languages: Use class hierarchy
-  - Each ESL sort becomes a root class
-  - Each ESL function becomes a subclass (constructor)
-  - Allows independent object language extensions
+### Standard presentation of BIPL in Haskell
 
-## Language investigation framework
+The BIPL object language’s AST representation in Haskell uses a distinct data type for expr and for stmt from the previous algebraic signature.
+```haskell
+-- Representing object language BIPL in (the metalanguage) Haskell:
+-- Statements and Expressions are distinct types
+-- Statements
+data Stmt
+  = Skip
+  | Assign String Expr
+  | Seq Stmt Stmt
+  | If Expr Stmt Stmt
+  | While Expr Stmt
+  
+-- Expressions
+data Expr
+  = IntConst Int
+  | BoolConst Bool
+  | Var String
+  | Unary UOp Expr
+  | Binary BOp Expr Expr
+  
+-- Unary and binary operators
+  data UOp = Negate | Not
+  data BOp = Add | Sub | Mul | Lt | Leq | Eq | Geq | Gt | And | Or
+```
 
-Object language: the language of study
-- Programming language concepts
-  - BTL: Expressions
-  - BIPL: Expressions + statements
-  - Pascal: structured programming language
-  - ADT-Pascal: generic programming language
-Metalanguage: the language of the tools
-- Haskell: a lazy functional language
-  - Represent object language abstract syntax
-  - Object language analysis
-  - Object language transformation
-  - Object language evaluation
+This too is a trade-off; it on the one hand makes it impossible to represent ASTs that could not be generated by the signature, but on the other hand may complicate further processing of the AST: code that traverses ASTs must “hop” between different data types.
 
+### Merged presentation of BIPL in the Haskell
 
-## Type analysis
+One might thus choose to combine the sorts of expressions and statements. This alternative, shown below represents expressions and statements with the same data type. We retain the distinct type names `Expr` and `Stmt` by adding Stmt as an alias for `Expr`.
+```haskell
+-- Representing object language BIPL in (the metalanguage) Haskell:
+-- Statements and Expressions are the same type (with different names)
+type MExpr = MStmt
 
-### Type Checking
-- Checks that a program is well typed
-- Discovers many subtle programming errors
-### Type inference
-- Takes an AST and creates a new, typed AST
-  - Typed AST: Every node is decorated with its type
-### Two main approaches
+data MStmt
+  = MSkip
+  | MAssign String MExpr
+  | MSeq MStmt MStmt
+  | MIf Expr MStmt MStmt
+  | MWhile MExpr MStmt
+  | MIntConst Int
+  | MBoolConst Bool
+  | MVar String
+  | MUnary UOp MExpr
+  | MBinary BOp MExpr MExpr
+  deriving ( Show, Eq, Read )
+  
+-- Unary and binary operators
+data UOp = Negate | Not
+data BOp = Add | Sub | Mul | Lt | Leq | Eq | Geq | Gt | And | Or
 
-#### Bottom-up typing
-- Variables and function declarations are known : infers type of expressions
-#### Top-down typing
-- Type declarations and algorithms are known infers most general consistent type for all code
+-- Checking if a merged BIPL AST represents a statement
+isStmt :: MStmt −> Bool
+isStmt (MSkip) = True
+isStmt (MAssign _ _) = True
+isStmt (MSeq _ _) = True
+isStmt (MIf _ _ _) = True
+isStmt (MWhile _ _) = True
+isStmt _ = False
 
-## Dynamic semantics
+-- Checking if a merged BIPL AST represents an expression
+isExpr :: MStmt −> Bool
+isExpr = not . isStmt
+```
 
-### Evaluator for expressions (BTL)
+### Interchange formats
 
-
-## Value Domain
-Common computer integers 
-- 8, 16, 32, 64 bit two’s-complement (Haskell: Int)
-- 8, 16, 32, 64 bit unsigned (Haskell: Word)
-
-Common computer reals
-- IEEE754: 32, 64, 80 bit floating point
-
-Common computer character strings (replaces Pascal char)
-- Unicode: UTF-8, UTF-16, UTF-32
-
-What about other Pascal types?
-- Booleans: 0, 1 encoded in Word8
-- Enumerations (scalar types): Word8 for ≤256 values
-- Set type: 256 bits (4*Word64)
-- Pointers: locations in memory
-- Array types
-- Record types
-
-
-
-
-### Interpreters for statements (BIPL)
-
-#### Basic Imerative Programming Language
-
-
-
-
-
-
-
-
-
-
+We mention that sometimes ASTs end up being represented using interchange formats, such as JSON or various XML languages. The running example of ours is below encoded as JSON. Interface formats have their own requirements that ASTs must conform to. For example, JSON does not have tuple types, only lists and records. Representing the three branches of `if` as fields of a record thus necessitates generating (artifical) names for those branches, to be used as field labels.
+```c++
+{
+  "pred": {
+    " if ": {
+      "x": { " iszero ": { "zero": { } } },
+      "y": { "succ": { "succ": { "zero": { } } } },
+      "z": { "zero": { } }
+  } }
+}
+```
 
 
 
