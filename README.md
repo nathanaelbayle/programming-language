@@ -2,6 +2,14 @@
 
 # Programming Language
 
+
+
+
+
+
+
+
+
 ### Introduction
 
 ### Abstract Syntax
@@ -101,9 +109,36 @@ Metalanguage: the language of the tools
 #### Top-down typing
 - Type declarations and algorithms are known infers most general consistent type for all code
 
+## Dynamic semantics
+
+### Evaluator for expressions (BTL)
+
+
+## Value Domain
+Common computer integers 
+- 8, 16, 32, 64 bit two’s-complement (Haskell: Int)
+- 8, 16, 32, 64 bit unsigned (Haskell: Word)
+
+Common computer reals
+- IEEE754: 32, 64, 80 bit floating point
+
+Common computer character strings (replaces Pascal char)
+- Unicode: UTF-8, UTF-16, UTF-32
+
+What about other Pascal types?
+- Booleans: 0, 1 encoded in Word8
+- Enumerations (scalar types): Word8 for ≤256 values
+- Set type: 256 bits (4*Word64)
+- Pointers: locations in memory
+- Array types
+- Record types
 
 
 
+
+### Interpreters for statements (BIPL)
+
+#### Basic Imerative Programming Language
 
 
 
