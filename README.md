@@ -75,18 +75,88 @@ pred ( if ( iszero zero ) then succ ( succ zero ) else zero )
 ```
 
 The BTL specification in ESL is as follows:
-````pascal
-symbol true: -> expr ; -- The Boolean "true"
-symbol false: -> expr ; -- The Boolean "false"
-symbol zero: -> expr ; -- The natural number zero
-symbol succ: expr -> expr ; -- Successor of a natural number
-symbol pred: expr -> expr ; -- Predecessor of a natural number
-symbol iszero: expr -> expr ; -- Test for a number to be zero
-symbol if: expr x expr x expr -> expr ; -- Conditional
+````haskell
+symbol true: -> expr; -- The Boolean "true"
+symbol false: -> expr; -- The Boolean "false"
+symbol zero: -> expr; -- The natural number zero
+symbol succ: expr -> expr; -- Successor of a natural number
+symbol pred: expr -> expr; -- Predecessor of a natural number
+symbol iszero: expr -> expr; -- Test for a number to be zero
+symbol if: expr × expr × expr -> expr; -- Conditional
 ````
+Here we do not separate integer expressions from boolean expressions.
+
+Thus the following unintended expression is valid according to the syntax.
+``` haskell
+pred ( if zero then succ ( succ true ) else zero )
+```
+
+### Fully typed presentation of BTL in ESL
+
+The example below shows a few typed function symbols as part of an ESL signature. The sorts here are `Bexpr` (boolean expression), `Iexpr` (integer expression). Here we provide two choice statements, one for booleans and one for integers, and some operations on each of the basic types.
+
+``` haskell
+symbol true : -> Bexpr; -- The Boolean "true"
+symbol false : -> Bexpr; -- The Boolean "false"
+symbol zero : -> Iexpr ; -- The natural number zero
+symbol succ : Iexpr -> Iexpr ; -- Successor of a natural number
+symbol pred: Iexpr -> Iexpr ; -- Predecessor of a natural number
+symbol iszero : Iexpr -> Bexpr; -- Test for a number to be zero
+symbol boolIf : Bexpr × Bexpr × Bexpr -> Bexpr; -- choice between booleans
+symbol intIf : Bexpr × Iexpr × Iexpr -> Iexpr ; -- choice between integers
+```
+
+The set of ASTs (programs) is defined as all the *terms* that can be *generated* from the signature. Generating means listing all type-correct compositions of the functions. For example, we could construct the AST for the above expression as follows.
+``` haskell
+pred (
+ intIf ( iszero ( zero () ) , succ ( succ zero () ) , zero () )
+ )
+```
+
+The following non-term is an example of a non-term in this presentation of BTL, though it was valid in the previous AST description. It is invalid because `zero()` is an `Iexpr` not a `Bexpr` as required by the `if` expressions, `true()` is an inappropriate argument for `succ` , `succ(..)` and `zero()` are inappropriate arguments for `boolIf`, and the return type of `boolIf` is not compatible with `Iexpr` as required by `pred`.
+``` haskell
+pred (
+ boolIf ( zero () , succ ( succ true () ) , zero () )
+ )
+ ```
+ 
+Being this precise with the type of each subterm for each expression comes at a price: a large AST signature.
 
 
+### Less stringent presentation of BTL in ESL
 
+We can relax the precision of the AST by using a more general `expr` for all expressions, and introduce a general function call with a function name rather than declaring each specific function. According to convention we keep `if` as a special language feature. The `*` symbol indicates zero or more occurrences of a sort.
+```haskell
+symbol if : expr × expr × expr -> expr;
+symbol functionCall : string × expr∗ -> expr;
+```
+
+This lets us construct terms for most expressions without adding more symbols to the signature. For example, we can construct the AST for the above expression as follows. 
+```haskell
+functionCall ( "pred",
+  if ( functionCall (" iszero ", functionCall ("zero")) ,
+    functionCall ("succ", functionCall ("succ", functionCall ("zero"))) ,
+    functionCall ("zero")
+  )
+)
+```
+
+The following non-term is an example of an invalid composition. It is invalid because the number of arguments to `if` is wrong.
+```haskell
+if ( functionCall ("zero") , functionCall (" iszero ", functionCall ("true")) )
+```
+
+Note that the non-term examples of the previous subsections are terms of the current signature (after the relevant rewrites).
+```haskell
+functionCall ( "pred",
+  if ( functionCall ("zero") ,
+    functionCall ("succ", functionCall ("succ", functionCall ("true"))) ,
+    functionCall ("zero")
+  )
+)
+```
+
+We cannot capture that the language specification requires that the first parameter of `if` must be an expression that evaluates to a boolean value, the argument to `succ` must be an integer expression, and so forth. Such violations must be caught later, by the type-checker, or at run time.
 
 
 
