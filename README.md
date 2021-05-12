@@ -33,7 +33,7 @@ Absttract syntax originally developed for compiling
   - term
 
 
-### Extended BTL abstract syntax
+## Extended BTL abstract syntax
 
 **Symbol** uplus : expr → expr ; \
 **Symbol** uminus : expr → expr ;\
@@ -55,7 +55,7 @@ Absttract syntax originally developed for compiling
 
 
 
-### Represent Object language in Metalanguage
+## Represent Object language in Metalanguage
 The ESL difines the abstract syntax of an Object Language. \
 We will use a Metalanguage for our tools :
 - How to represent abstract syntax in the metalanguage
