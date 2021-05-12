@@ -50,8 +50,40 @@ An *abstract syntax tree* (AST) is a program representation free of such clutter
 
 A possible AST of the above example Haskell expression is as follows. It contains all the nodes that are necessary for further analysis of the program fragment.
 
+![picture alt](https://github.com/nathanaelbayle/programming-language/blob/main/pic_1.PNG)
 
-![picture alt](http://via.placeholder.com/200x150 )
+The *if expression* has three components, the condition and the value of the two branches.
+The *comparison expression* (the `==` expression) has two integer subexpressions.
+
+## Specifying abstract syntax
+
+An *abstract syntax tree* (AST) is a node-labeled *multiway tree* (popularly celled *rose tree* by functional programmers). In a rose tree the number of child nodes for each node can be arbitrary. The labels indicate what kind of a language construct the node represents (such as a variable, function call, or integer constant, to give a few examples). The labels typically translate to node types in an AST implementation.
+
+### Extended Signature Noration (ESL)
+
+The notations for specifying ASTs (both graphical and textual) vary; here we use Ralf Lämmel’s *Extended Signature Notation* (ESL). In this notation, ASTs are specified using *algebraic signatures*. They consist of a set of sorts and typed function symbols. Sorts appear as argument and parameter types of the functions. In common notations, signatures list sorts explicitly, but here they are implicit: the set of sorts are the sorts appearing in at least one function type.
+
+> Although seemingly simpler for small examples, such a lack of declarations is known to delay discovery of simple misprints, and may also be counterproductive when it comes to analysing a language by not forcing clear reasoning at an early stage.
+
+### Standard presentation of BTL in ESL
+
+Let us take a simple example, the *Basic TAPL Language* (BTL). This is a very simple language consisting of two kinds of values, booleans and natural numbers, and incrementing and decrementing operations, a test for zero, and a conditional expression. BTL has no variables.
+
+Here is a simple BTL program:
+``` haskell
+pred ( if ( iszero zero ) then succ ( succ zero ) else zero )
+```
+
+The BTL specification in ESL is as follows:
+````pascal
+symbol true: -> expr ; -- The Boolean "true"
+symbol false: -> expr ; -- The Boolean "false"
+symbol zero: -> expr ; -- The natural number zero
+symbol succ: expr -> expr ; -- Successor of a natural number
+symbol pred: expr -> expr ; -- Predecessor of a natural number
+symbol iszero: expr -> expr ; -- Test for a number to be zero
+symbol if: expr x expr x expr -> expr ; -- Conditional
+````
 
 
 
