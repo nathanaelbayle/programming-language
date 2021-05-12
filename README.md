@@ -1,15 +1,16 @@
 # Programming Language
 
 ## Table of Content
-- Presentation
+- [Presentation](#presentation "Goto Presentation")
   - [Objectives](#objectives "Goto Objectives")
   - [Content](#content "Goto Content")
   - [Knowledge](#knowledge "Goto Knowledge")
   - [Skills](#skills "Goto Skills")
   - [General competence](#general-competence "Goto General Competence")
 
-- Abstract Language
+- [Abstract Syntax](#abstract-syntax "Goto Abstract Syntax")
 
+# Presentation
 
 ## Objectives
  The course gives a practical and theoretical introduction to semantics of programming languages and to a range of important constructs and abstractions used in contemporary languages. The (indirect) goal is that an increased understanding of programming languages translates to higher quality of programs that students write and higher productivity in their programming. The class also equips the student with basic skills of designing and implementing small languages, where an implementation consists of a parser, type checker, and an interpreter.
@@ -43,6 +44,8 @@ The course covers important language constructs in modern languages. It discusse
 
 &nbsp;
 &nbsp;
+
+# Abstract Syntax
 
 ## About concrete and abstract syntax
 
