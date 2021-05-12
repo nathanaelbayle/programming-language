@@ -26,10 +26,10 @@
     - [Standard presentation of BIPL in Haskell](#standard-presentation-of-bipl-in-haskell "Goto Standard presentation of BIPL in Haskell")
     - [Merged presentation of BIPL in the Haskell](#merged-presentation-of-bipl-in-the-haskell "Goto Merged presentation of BIPL in the Haskell")
     - [Interchange formats](#interchange-formats "Goto Interchange formats")
-  - [Lambda Calculus](#ambda-calculus "Goto Lambda Calculus")
-    - [Lambda booleans](#lambda-booleans "Goto Lambda booleans")
-    - [Lambda numbers](#lambda-numbers "Goto Lambda numbers")
-    - [Number operators](#lambda-numbers "Goto Number operators")
+- [Lambda Calculus](#ambda-calculus "Goto Lambda Calculus")
+  - [Lambda booleans](#lambda-booleans "Goto Lambda booleans")
+  - [Lambda numbers](#lambda-numbers "Goto Lambda numbers")
+  - [Number operators](#lambda-numbers "Goto Number operators")
   
 &nbsp;
 # Presentation
