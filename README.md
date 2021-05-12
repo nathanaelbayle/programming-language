@@ -1,5 +1,3 @@
-# **WORK IN PROGRESS** 
-
 # Programming Language
 
 ## Table of Content
