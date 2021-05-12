@@ -3,7 +3,7 @@
 # Programming Language
 
 ## Table of Content
-1. [Objectives](##bjectives "Goto Objectives")
+1. [Objectives](#objectives "Goto Objectives")
 
 ## Objectives
  The course gives a practical and theoretical introduction to semantics of programming languages and to a range of important constructs and abstractions used in contemporary languages. The (indirect) goal is that an increased understanding of programming languages translates to higher quality of programs that students write and higher productivity in their programming. The class also equips the student with basic skills of designing and implementing small languages, where an implementation consists of a parser, type checker, and an interpreter.
