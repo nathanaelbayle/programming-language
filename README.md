@@ -13,7 +13,25 @@
   - [Specifying abstract syntax](#specifying-abstract-syntax "Goto Specifying abstract syntax")
     - [Extended Signature Noration](#extended-signature-noration-esl "Goto Extended Signature Noration")
     - [Standard presentation of BTL in ESL](#standard-presentation-of-btl-in-esl "Goto Standard presentation of BTL in ESL")
-
+    - [Fully typed presentation of BTL in ESL](#fully-typed-presentation-of-btl-in-esl "Goto Fully typed presentation of BTL in ESL")
+    - [Less stringent presentation of BTL in ESL](#less-stringent-presentation-of-btl-in-esl "Goto Less stringent presentation of BTL in ESL")
+    - [Universal representation of ASTs in ESL](#universal-representation-of-asts-in-esl "Goto Universal representation of ASTs in ESL")
+  - [Representing ASTs in a meta-language](#representing-asts-in-a-meta-language "Goto Representing ASTs in a meta-language")
+    - [Standard presentation of BTL in Haskell](#standard-presentation-of-btl-in-haskell "Goto Standard presentation of BTL in Haskell")
+    - [Opaque presentation of BTL in Haskell](#opaque-presentation-of-btl-in-haskell "Goto Opaque presentation of BTL in Haskell")
+    - [Standard presentation of BTL using OO](#standard-presentation-of-btl-using-oo "Goto Standard presentation of BTL using OO")
+    - [Haskell representation of universal presentation](#haskell-representation-of-universal-presentation "Goto Haskell representation of universal presentation")
+  - [Further Examples](#further-examples "Goto Further Examples")
+    - [Standard presentation of BIPL in ESL](#standard-presentation-of-bipl-in-esl "Goto Standard presentation of BIPL in ESL")
+    - [Standard presentation of BIPL in Haskell](#standard-presentation-of-bipl-in-haskell "Goto Standard presentation of BIPL in Haskell")
+    - [Merged presentation of BIPL in the Haskell](#merged-presentation-of-bipl-in-the-haskell "Goto Merged presentation of BIPL in the Haskell")
+    - [Interchange formats](#interchange-formats "Goto Interchange formats")
+  - [Lambda Calculus](#ambda-calculus "Goto Lambda Calculus")
+    - [Lambda booleans](#lambda-booleans "Goto Lambda booleans")
+    - [Lambda numbers](#lambda-numbers "Goto Lambda numbers")
+    - [Number operators](#lambda-numbers "Goto Number operators")
+  
+&nbsp;
 # Presentation
 
 ## Objectives
