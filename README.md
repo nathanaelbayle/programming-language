@@ -427,6 +427,78 @@ We mention that sometimes ASTs end up being represented using interchange format
 ```
 
 
+## Lambda Calculus
+A mathematical discipline consisting purely of lambda functions.
+Values like ints and booleans are included only if represented as lambdas.
+
+### Lambda booleans
+To represent a boolean as a function, try to think of the functionality you need whenever you need boolean and represent that instead.
+A boolean can be function that takes two arguments, and returns either the first or the second.
+
+type Bool = a -> a -> a
+
+true :: Bool \
+true = \a -> \b -> a
+
+false :: Bool \
+false = \a -> \b -> b
+
+An if-expression can then be represented as \
+if :: Bool -> a -> a \
+if = \b -> \e1 -> \e2 -> b e1 e2 \
+where b is a boolean like described above. If b is true, e1 will be returned, otherwise e2 is returned.
+
+Note that there is a difference between if-expression and an if-statement:
+- if-expression: 'the value of this expression is either this or that', like if then else i Haskell
+- if-statement: 'either do this or do that', like if-else in every other language
+
+#### Boolean operators
+
+Operators like and, or, not are relatively simple to represent:
+
+and :: Bool -> Bool -> Bool \
+and = \b1 -> \b2 -> b1 b2 false
+
+or :: Bool -> Bool -> Bool \
+or = \b1 -> \b2 -> b1 true b2
+
+not :: Bool -> Bool \
+not \b -> b false true
+
+### Lambda numbers
+To represent numbers as functions, try first to answer the question: when programming, when do you ever need a natural number n if not to do something n times? 
+The answer is 'quite often', but let's pretend the answer is 'never' and move on. Let us try to represent the functionality of doing something n times as a function:
+
+type Number = (a -> a) -> a -> a 
+
+A natural number n is therefore a function that takes another function and an argument, and applies the function to the argument n times. The first numbers then look like:
+
+zero :: Number \
+zero = \f -> \x -> x
+
+one :: Number \
+one = \f -> \x -> f x
+
+two :: Number \
+two =  \f -> \x -> f (f x)
+
+We only need to hardcode zero, as the rest can be represented as applying the succ function to zero n times:
+
+succ :: Number -> Number \
+succ = \n -> (\f -> \x -> f (n f x))
+
+You may read that as the succ function taking a number n, a function f, an argument x, uses n to apply f to x n times, and applies f one more time afterwards. The naturaly numbers are therefore just zero, succ zero, succ (succ zero), etc.
+
+### Number operators
+The operators add and multiply are also relatively simple:
+
+add :: Number -> Number -> Number \
+add = \n -> \m -> \f -> \x -> n f (m f x)
+
+multiply :: Number -> Number -> Number \
+multiply = \n -> \m -> \f -> \x -> n (m f) x
+
+However, the operators to subtract and divide are far more complicated, and has been left as an excercise to the reader :P
 
 
 
