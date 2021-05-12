@@ -4,7 +4,6 @@
 
 ## #include glossary
 
-
 ## Objectives
  The course gives a practical and theoretical introduction to semantics of programming languages and to a range of important constructs and abstractions used in contemporary languages. The (indirect) goal is that an increased understanding of programming languages translates to higher quality of programs that students write and higher productivity in their programming. The class also equips the student with basic skills of designing and implementing small languages, where an implementation consists of a parser, type checker, and an interpreter.
 
@@ -35,7 +34,10 @@ The course covers important language constructs in modern languages. It discusse
 - follow new developments in programming languages.
 - read and understand, to a useful degree, scholarly articles in the area of programming languages.
 
+&nbsp;&nbsp;
 
+# Abstract Syntax
+&nbsp;
 ## About concrete and abstract syntax
 
 *Concrete syntax* is concerned with the precise syntax of a program construct, whereas *abstract syntax* with those components of the construct that are essential for its semantics. 
