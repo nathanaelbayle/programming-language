@@ -2,6 +2,56 @@
 
 # Programming Language
 
+## #include glossary
+
+
+## Objectives
+ The course gives a practical and theoretical introduction to semantics of programming languages and to a range of important constructs and abstractions used in contemporary languages. The (indirect) goal is that an increased understanding of programming languages translates to higher quality of programs that students write and higher productivity in their programming. The class also equips the student with basic skills of designing and implementing small languages, where an implementation consists of a parser, type checker, and an interpreter.
+
+## Content
+The course covers important language constructs in modern languages. It discusses the specification of the syntax and semantics of programming languages, and introduces the notions of a type system and type safety. Students implement a series of interpreters and type checkers. Reflecting on the influence of the properties of a programming language and its features on software quality is a central theme of the course.
+
+## Learning Outcomes
+
+### Knowledge
+
+- explain the concepts of concrete and abstract syntax of a language, and the concerns of designing syntax that can be parsed effectively; and select parsing tools and approaches according to problem context.
+- explain notations and approaches to defining semantics of programming languages, in particular those of operational semantics.
+- explain the impacts of evaluation order to termination, to efficiency, and the ease or difficulty of reasoning about programs.
+- explain what type safety of a programming language means.
+- explain different variations of polymorphism, and relate them to features of contemporary programming languages.
+- explain the essence of important programming language constructs and concepts, describe their implementation approaches, purpose and productive use in programming, and their manifestations and variations in different mainstream programming languages.
+
+### Skills
+
+- define an abstract grammar for a small programming language and implement a parser for it.
+- define an operational semantics for a small language and implement it as an interpreter.
+- define and implement a type system for a small language.
+
+### General competence
+
+- make justified decisions about the use of different programming language constructs in programming.
+- make justified decisions about selecting programming languages for software projects.
+- follow new developments in programming languages.
+- read and understand, to a useful degree, scholarly articles in the area of programming languages.
+
+
+## About concrete and abstract syntax
+
+*Concrete syntax* is concerned with the precise syntax of a program construct, whereas *abstract syntax* with those components of the construct that are essential for its semantics. 
+For example, consider the (Haskell) expression:
+```haskell
+if a == 0 then "yes" else "no"
+````
+
+The concrete syntax is worried about keywords sych as `if`, `then`, `else`, names of operations `==`, and maybe even the layout of the text and comments.
+
+An *abstract syntax tree* (AST) is a program representation free of such clutter. They are intended for defining the semantics and runtime properties only, not for editing or refactoring of source code. ASTs are defined by *abstract grammars*, which can be ambiguous, as they are not used for defining parsers. Abstract grammars can be defined by grammar formalisms, signature declarations, as algebraic data types, or as class hierarchies in an object-oriented (OO) setting.
+
+A possible AST of the above example Haskell expression is as follows. It contains all the nodes that are necessary for further analysis of the program fragment.
+
+
+![picture alt](http://via.placeholder.com/200x150 )
 
 
 
@@ -10,9 +60,14 @@
 
 
 
-### Introduction
 
-### Abstract Syntax
+
+
+
+
+## Introduction
+
+## Abstract Syntax
 There is two forms of syntax
 - Concrete syntax : what the programmer writes
 - Abstract syntax : what is essential for the semantics
@@ -32,7 +87,7 @@ Absttract syntax originally developed for compiling
 
 #### Extended Signature Language (ESL)
 - BSL Symbol declarations
-- Type declarations (aliases) list types t*, t+
+- Type declarations (aliases) list types t*, t
 - Optional types t?
 - Tuple types t1 × ... × tn
 - Primitive types
