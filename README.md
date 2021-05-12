@@ -28,8 +28,9 @@
     - [Interchange formats](#interchange-formats "Goto Interchange formats")
 - [Lambda Calculus](#ambda-calculus "Goto Lambda Calculus")
   - [Lambda booleans](#lambda-booleans "Goto Lambda booleans")
+    - [Boolean operators](#boolean-operators "Goto Boolean operators")
   - [Lambda numbers](#lambda-numbers "Goto Lambda numbers")
-  - [Number operators](#lambda-numbers "Goto Number operators")
+    - [Number operators](#number-operators "Goto Number operators")
   
 &nbsp;
 # Presentation
