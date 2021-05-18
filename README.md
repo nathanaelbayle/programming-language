@@ -461,77 +461,106 @@ We mention that sometimes ASTs end up being represented using interchange format
 
 
 ## Lambda Calculus
-A mathematical discipline consisting purely of lambda functions.
-Values like ints and booleans are included only if represented as lambdas.
+A mathematical discipline consisting purely of lambda functions. Values like ints and booleans are included only if represented as lambdas. It is common to use syntax like `((λxy.yxx)z)y`, but to simplify the text I will use Haskell syntax instead. `λ` is replaced by `\`, `.` is replaced by `->`, and we now need a space inbetween each variable. For example: `((λxy.yxx)z)y` becomes `(\x y -> y x x) z y`.
+
 
 ### Lambda booleans
 To represent a boolean as a function, try to think of the functionality you need whenever you need a boolean and represent that instead.
 A boolean can be a function that takes two arguments, and returns either the first or the second.
 
+```Haskell
 type Bool = a -> a -> a
 
-true :: Bool \
+true :: Bool 
 true = \a -> \b -> a
 
-false :: Bool \
+false :: Bool 
 false = \a -> \b -> b
+```
 
-An if-expression can then be represented as \
-if :: Bool -> a -> a \
-if = \b -> \e1 -> \e2 -> b e1 e2 \
-where b is a boolean like described above. If b is true, e1 is returned, otherwise e2 is returned.
+An if-expression can then be represented as 
+```Haskell
+if :: Bool -> a -> a 
+if = \b -> \e1 -> \e2 -> b e1 e2 
+```
+where `b` is a boolean like described above. If `b` is `true`, `e1` is returned, otherwise `e2` is returned.
 
 Note that there is a difference between an if-expression and an if-statement:
-- if-expression: 'the value of this expression is either this or that', like if then else in Haskell
-- if-statement: 'either do this or do that', like if-else in every other language
+- if-expression: 'the value of this expression is either this or that', like `if then else` in Haskell
+- if-statement: 'either do this or do that', like `if-else` in every other language
 
 #### Boolean operators
 
-Operators like and, or, not are relatively simple to implement:
+Operators like `and`, `or`, `not` are relatively simple to implement:
 
-and :: Bool -> Bool -> Bool \
+```Haskell
+and :: Bool -> Bool -> Bool 
 and = \b1 -> \b2 -> b1 b2 false
 
-or :: Bool -> Bool -> Bool \
+or :: Bool -> Bool -> Bool 
 or = \b1 -> \b2 -> b1 true b2
 
-not :: Bool -> Bool \
+not :: Bool -> Bool 
 not = \b -> b false true
+```
 
 ### Lambda numbers
-To represent numbers as functions, try first to answer the question: when programming, when do you ever need a natural number n if not to do something n times? 
-The answer is 'quite often', but let's pretend the answer is 'never' and move on. Let us try to represent the functionality of doing something n times as a function:
+To represent numbers as functions, try first to answer the question: when programming, when do you ever need a natural number `n` if not to do something `n` times? 
+The answer is 'quite often', but let's pretend the answer is 'never' and move on. Let us try to represent the functionality of doing something `n` times as a function:
 
+```Haskell
 type Number = (a -> a) -> a -> a 
+```
 
-A natural number n is therefore a function that takes another function and an argument, and applies the function to the argument n times. The first couple numbers then look like:
+A natural number `n` is therefore a function that takes another function and an argument, and applies the function to the argument `n` times. The first couple numbers then look like:
 
-zero :: Number \
+
+```Haskell
+zero :: Number
 zero = \f -> \x -> x
 
-one :: Number \
+one :: Number 
 one = \f -> \x -> f x
 
-two :: Number \
+two :: Number 
 two = \f -> \x -> f (f x)
+```
 
-We only need to hardcode zero, as the rest can be represented as applying the successor function to zero n times:
+We only need to hardcode `zero`, as the rest can be represented as applying the successor function to `zero` `n` times:
 
-succ :: Number -> Number \
+```Haskell
+succ :: Number -> Number 
 succ = \n -> (\f -> \x -> f (n f x))
+```
 
-You may read that as the succ function taking a number n, a function f, an argument x, uses n to apply f to x n times, and applies f one more time afterwards. The natural numbers are therefore just zero, succ zero, succ (succ zero), etc.
+You may read that as the `succ` function taking a number `n`, a function `f`, an argument `x`, uses `n` to apply `f` to `x` `n` times, and applies `f` one more time afterwards. The natural numbers are therefore just `zero`, `succ zero`, `succ (succ zero)`, etc.
 
 #### Number operators
-The operators add and multiply are also relatively simple:
+The operators `add` and `multiply` are also relatively simple:
 
-add :: Number -> Number -> Number \
+```Haskell
+add :: Number -> Number -> Number 
 add = \n -> \m -> \f -> \x -> n f (m f x)
 
-multiply :: Number -> Number -> Number \
+multiply :: Number -> Number -> Number 
 multiply = \n -> \m -> \f -> \x -> n (m f) x
+```
 
-However, the operators to subtract and divide are far more complicated, and has been left as an excercise to the reader :P
+However, the operators to `subtract` and `divide` are far more complicated, and has been left as an excercise to the reader :P
 
 
+## Reductions
+Now that we have defined simple types, let's see how we can take a lamdbda expression and evaluate it. We have 3 operations we can do to reduce the size of an expression, and the goal is to reduce it until it's not possible to reduce it further. A lambda expression is in normal form if it cannot be reduced further.
 
+Note that you don't need to learn any of this for the exam, as https://lambdacalc.io/ does it for you, even showing you the steps to solve any expression. Just remember to first convert back into traditional lambda calculus syntax, with `λ` instead of `\`, etc.
+
+### Alpha conversion
+Alpha conversion simply renames a variable. If we have an expression like `(\x -> x) x`, then we really have two different x-es, and if we don't swap the names for one of them we get in trouble later. So `(\x -> x) x` becomes `(\x -> x) y`.
+
+### Beta reduction
+This is the most important one, as it essentially means applying a function to an argument. In an expression like `(\x -> y x) z`, remove the `\x->`, the `z`, and replace every `x` with a `z` in what's left. So `(\x -> y x) z` becomes `y z`.
+
+### Eta reduction
+This is a special case of a beta reduction, it means skipping the middle man in a function application. In the expression `(\x -> f x) z`, if `x` does not appear as a free variable in `f`, then we can reduce  `(\x -> f x) z` to `f z`.
+
+With these tools we can reduce any lambda expression, it just takes a bit of work. But why do lot work when https://lambdacalc.io/ do trick?
