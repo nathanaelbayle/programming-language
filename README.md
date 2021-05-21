@@ -84,8 +84,6 @@ An *abstract syntax tree* (AST) is a program representation free of such clutter
 
 A possible AST of the above example Haskell expression is as follows. It contains all the nodes that are necessary for further analysis of the program fragment.
 
-![picture alt](https://github.com/nathanaelbayle/programming-language/blob/main/pic_1.PNG)
-
 The *if expression* has three components, the condition and the value of the two branches.
 The *comparison expression* (the `==` expression) has two integer subexpressions.
 &nbsp;
