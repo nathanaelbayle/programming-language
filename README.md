@@ -68,6 +68,26 @@ The course covers important language constructs in modern languages. It discusse
 &nbsp;
 &nbsp;
 
+
+## Formal Grammars (parsing)
+
+Let define a grammar for balanced parenthesis expression:
+````heskell
+S -> S S
+S -> ( S )
+S -> ε
+````
+To generate `(())()()` :
+````haskell
+S -> S S -> S S S -> S S ( S ) -> S S () -> S ( S )() -> S ()() -> ( S )()() -> ((S))()() -> (())()()
+````
+
+
+
+
+
+
+
 # Abstract Syntax
 
 ## About concrete and abstract syntax
