@@ -478,11 +478,11 @@ We mention that sometimes ASTs end up being represented using interchange format
 ```
 
 
-## Lambda Calculus
+# Lambda Calculus
 A mathematical discipline consisting purely of lambda functions. Values like ints and booleans are included only if represented as lambdas. It is common to use syntax like `((λxy.yxx)z)y`, but to simplify the text I will use Haskell syntax instead. `λ` is replaced by `\`, `.` is replaced by `->`, and we now need a space inbetween each variable. For example: `((λxy.yxx)z)y` becomes `(\x y -> y x x) z y`.
 
 
-### Lambda booleans
+## Lambda booleans
 To represent a boolean as a function, try to think of the functionality you need whenever you need a boolean and represent that instead.
 A boolean can be a function that takes two arguments, and returns either the first or the second.
 
@@ -507,7 +507,7 @@ Note that there is a difference between an if-expression and an if-statement:
 - if-expression: 'the value of this expression is either this or that', like `if then else` in Haskell
 - if-statement: 'either do this or do that', like `if-else` in every other language
 
-#### Boolean operators
+### Boolean operators
 
 Operators like `and`, `or`, `not` are relatively simple to implement:
 
@@ -522,7 +522,7 @@ not :: Bool -> Bool
 not = \b -> b false true
 ```
 
-### Lambda numbers
+## Lambda numbers
 To represent numbers as functions, try first to answer the question: when programming, when do you ever need a natural number `n` if not to do something `n` times? 
 The answer is 'quite often', but let's pretend the answer is 'never' and move on. Let us try to represent the functionality of doing something `n` times as a function:
 
@@ -553,7 +553,7 @@ succ = \n -> (\f -> \x -> f (n f x))
 
 You may read that as the `succ` function taking a number `n`, a function `f`, an argument `x`, uses `n` to apply `f` to `x` `n` times, and applies `f` one more time afterwards. The natural numbers are therefore just `zero`, `succ zero`, `succ (succ zero)`, etc.
 
-#### Number operators
+### Number operators
 The operators `add` and `multiply` are also relatively simple:
 
 ```Haskell
